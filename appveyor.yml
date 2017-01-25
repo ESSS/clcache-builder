@@ -1,0 +1,91 @@
+version: 4.0.0
+
+environment:
+
+  matrix:
+    # Pre-installed Python versions, which Appveyor may upgrade to
+    # a later point release.
+    # See: http://www.appveyor.com/docs/installed-software#python
+
+    # NOTE: PyInstaller does not work with Python 3.6
+
+    - PYTHON: "C:\\Python35-x64"
+      PYTHON_VERSION: "3.5.x" # currently 3.5.2
+      PYTHON_ARCH: "64"
+
+platform:
+  - x64
+
+install:
+  # If there is a newer build queued for the same PR, cancel this one.
+  # The AppVeyor 'rollout builds' option is supposed to serve the same
+  # purpose but it is problematic because it tends to cancel builds pushed
+  # directly to master instead of just PR builds (or the converse).
+  # credits: JuliaLang developers.
+  - ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER -and $env:APPVEYOR_BUILD_NUMBER -ne ((Invoke-RestMethod `
+        https://ci.appveyor.com/api/projects/$env:APPVEYOR_ACCOUNT_NAME/$env:APPVEYOR_PROJECT_SLUG/history?recordsNumber=50).builds | `
+        Where-Object pullRequestId -eq $env:APPVEYOR_PULL_REQUEST_NUMBER)[0].buildNumber) { `
+          throw "There are newer queued builds for this pull request, failing early." }
+
+  # Prepend newly installed Python to the PATH of this build (this cannot be
+  # done from inside the powershell script as it would require to restart
+  # the parent CMD process).
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+
+  # Check that we have the expected version and architecture for Python
+  - "python --version"
+  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+
+  # Upgrade to the latest version of pip to avoid it displaying warnings
+  # about it being out of date.
+  - "pip install --disable-pip-version-check --user --upgrade pip"
+
+  # Install the build dependencies of the project. If some dependencies contain
+  # compiled extensions and are not provided as pre-built wheel packages,
+  # pip will build them from source using the MSVC compiler matching the
+  # target Python version and architecture
+  - "pip install -r dev-requirements.txt"
+  
+  # Update submodules
+  # - git submodule update --init --recursive
+  
+  # Download and unpack source into "clcache" directory
+  - curl -sSL https://codeload.github.com/frerich/clcache/zip/v%APPVEYOR_BUILD_VERSION% -o clcache-src-%APPVEYOR_BUILD_VERSION%.zip
+  - 7z x -y clcache-src-%APPVEYOR_BUILD_VERSION%.zip >NUL
+  - move clcache-%APPVEYOR_BUILD_VERSION% clcache
+
+build_script:
+  # Build the compiled extension
+  - cd clcache
+  - pyinstaller clcache.py
+  - cd ..
+  - set
+  - move clcache\dist\clcache clcache-%APPVEYOR_BUILD_VERSION%
+  
+  # Build the Chocolatey package
+  - sed -i "s/{VERSION}/%APPVEYOR_BUILD_VERSION%/g" clcache.nuspec
+  - choco pack
+
+test_script:
+  # Test the compiled extension
+  - cd clcache-%APPVEYOR_BUILD_VERSION%
+  - clcache.exe --help
+  - cd ..
+  
+  # Test the chocolatey package
+  - choco install -v -d clcache.%APPVEYOR_BUILD_VERSION%.nupkg
+  - clcache --help
+  - where clcache
+
+on_success:
+  - "echo Branch: %APPVEYOR_REPO_BRANCH%"
+  - "echo Pull Request: %APPVEYOR_PULL_REQUEST_NUMBER%"
+  - cd clcache-%APPVEYOR_BUILD_VERSION%
+  - 7z a -y clcache-%APPVEYOR_BUILD_VERSION%.zip
+  - move clcache-%APPVEYOR_BUILD_VERSION%.zip ..
+  - cd ..
+  - if "%APPVEYOR_REPO_BRANCH%"=="master" if "%APPVEYOR_PULL_REQUEST_NUMBER%"=="" set PUBLISH=1
+  - sha256sum clcache.%APPVEYOR_BUILD_VERSION%.nupkg
+  - sha256sum clcache-%APPVEYOR_BUILD_VERSION%.zip
+  - if "%PUBLISH%"=="1" appveyor PushArtifact clcache.%APPVEYOR_BUILD_VERSION%.nupkg
+  - if "%PUBLISH%"=="1" appveyor PushArtifact clcache-%APPVEYOR_BUILD_VERSION%.zip

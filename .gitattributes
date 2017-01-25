@@ -1,0 +1,25 @@
+* text=auto
+
+*.sh            text eol=lf
+
+*.bat           text eol=crlf
+*.cmd           text eol=crlf
+
+*.c             text
+*.cpp           text
+*.h             text
+*.hpp           text
+*.ini           text
+*.md            text
+*.nuspec        text
+*.ps1           text
+*.py            text
+*.rst           text
+*.txt           text
+*.yaml          text
+*.yml           text
+
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.db            binary
