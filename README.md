@@ -1,6 +1,8 @@
 # clcache-builder 
 ## Generates executable and Chocolatey package for clcache.py
 
+[![Build status](https://ci.appveyor.com/api/projects/status/ci8xpk1wa0e8qyxh/branch/master?svg=true)](https://ci.appveyor.com/project/ESSS/clcache-builder/branch/master)
+
 This project generates a package with an executable for [clcache.py](https://github.com/frerich/clcache) that is meant to facilitate the usage of `clcache` in a portable way. It is specially useful when needing to use `clcache` in environments with Python 2, since newer versions of `clcache` supports only Python 3.3+.
 
 It also generates a [Chocolatey](https://chocolatey.org/) package that can be downloaded and installed using `choco install`. The advantage of the Chocolatey package is that only `clcache.exe` is added to the PATH (the accompanying `.pyd` and `.dll` files SHOULD NOT be added to the PATH, because they could be accidentally loaded by other programs).
