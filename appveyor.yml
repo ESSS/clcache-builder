@@ -10,8 +10,21 @@ environment:
 
     # NOTE: PyInstaller does not work with Python 3.6
 
-    - PYTHON: "C:\\Python35-x64"
-      PYTHON_VERSION: "3.5.x" # currently 3.5.2
+    # NOTE: PyInstaller with Python 3.5 is not running on Windows Vista, giving the following error:
+    # Error loading Python DLL: C:\ProgramData\chocolatey\lib\clcache\clcache-4.0.0\python35.dll (error code 1114)
+    # Changing the default to be Python 3.4.
+    # More information about the problem here (other possible workarounds):
+    #   https://www.ddo.com/forums/showthread.php/436296-DDO-ML-an-ultrafast-lightweight-DDO-launcher/page14
+    # Possibly related issues:
+    #   https://github.com/pyinstaller/pyinstaller/issues/1566
+    #   https://github.com/pyinstaller/pyinstaller/issues/2170
+    
+    # - PYTHON: "C:\\Python35-x64"
+    #   PYTHON_VERSION: "3.5.x" # currently 3.5.2
+    #   PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python34-x64"
+      PYTHON_VERSION: "3.4.x" # currently 3.4.4
       PYTHON_ARCH: "64"
 
 platform:
