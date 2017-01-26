@@ -27,7 +27,7 @@ In the `appveyor.yml` file, change the version in the first line and in the `CLC
 
 Create a new release on GitHub with a tag such as `v4.0.0` and a name such as `clcache 4.0.0`. A new build will be triggered, and the artifacts published by AppVeyor.
 
-Artifacts are published by AppVeyor from builds in tagged commits in the `master` branch. These artifacts should be attached to the GitHub release, and the `.nuspec` package uploaded to Chocolatey.
+Artifacts are published by AppVeyor from builds in tagged commits in the `master` branch. These artifacts should be attached to the GitHub release, and the `.nupkg` package uploaded to Chocolatey.
 
 ## How it works
 
