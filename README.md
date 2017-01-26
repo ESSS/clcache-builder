@@ -1,6 +1,8 @@
 # clcache-builder 
 ## Generates executable and Chocolatey package for clcache.py
 
+[![Latest version released](https://img.shields.io/chocolatey/v/clcache.svg)](https://chocolatey.org/packages/clcache)
+[![Package downloads count](https://img.shields.io/chocolatey/dt/clcache.svg)](https://chocolatey.org/packages/clcache)
 [![Build status](https://ci.appveyor.com/api/projects/status/ci8xpk1wa0e8qyxh/branch/master?svg=true)](https://ci.appveyor.com/project/ESSS/clcache-builder/branch/master)
 
 This project generates a package with an executable for [clcache.py](https://github.com/frerich/clcache) that is meant to facilitate the usage of `clcache` in a portable way. It is specially useful when needing to use `clcache` in environments with Python 2, since newer versions of `clcache` supports only Python 3.3+.
@@ -12,6 +14,8 @@ It also generates a [Chocolatey](https://chocolatey.org/) package that can be do
 ## How to update to a new version
 
 The version in the first line of the `appveyor.yml` file should be changed to the new version.
+
+Artifacts are published by AppVeyor from builds in the `master` branch. These artifacts should be uploaded to a new GitHub release, and the `.nuspec` package uploaded to Chocolatey.
 
 ## How it works
 
