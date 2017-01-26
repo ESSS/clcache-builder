@@ -73,7 +73,6 @@ build_script:
   - cd clcache
   - pyinstaller clcache.py
   - cd ..
-  - set
   - move clcache\dist\clcache clcache-%CLCACHE_VERSION%
   
   # Build the Chocolatey package
