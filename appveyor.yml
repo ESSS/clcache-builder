@@ -1,6 +1,7 @@
-version: 4.0.0
+version: 4.0.0.{build}
 
 environment:
+  CLCACHE_VERSION: 4.0.0
 
   matrix:
     # Pre-installed Python versions, which Appveyor may upgrade to
@@ -50,9 +51,9 @@ install:
   # - git submodule update --init --recursive
   
   # Download and unpack source into "clcache" directory
-  - curl -sSL https://codeload.github.com/frerich/clcache/zip/v%APPVEYOR_BUILD_VERSION% -o clcache-src-%APPVEYOR_BUILD_VERSION%.zip
-  - 7z x -y clcache-src-%APPVEYOR_BUILD_VERSION%.zip >NUL
-  - move clcache-%APPVEYOR_BUILD_VERSION% clcache
+  - curl -sSL https://codeload.github.com/frerich/clcache/zip/v%CLCACHE_VERSION% -o clcache-src-%CLCACHE_VERSION%.zip
+  - 7z x -y clcache-src-%CLCACHE_VERSION%.zip >NUL
+  - move clcache-%CLCACHE_VERSION% clcache
 
 build_script:
   # Build the compiled extension
@@ -60,32 +61,34 @@ build_script:
   - pyinstaller clcache.py
   - cd ..
   - set
-  - move clcache\dist\clcache clcache-%APPVEYOR_BUILD_VERSION%
+  - move clcache\dist\clcache clcache-%CLCACHE_VERSION%
   
   # Build the Chocolatey package
-  - sed -i "s/{VERSION}/%APPVEYOR_BUILD_VERSION%/g" clcache.nuspec
+  - sed -i "s/{VERSION}/%CLCACHE_VERSION%/g" clcache.nuspec
   - choco pack
 
 test_script:
   # Test the compiled extension
-  - cd clcache-%APPVEYOR_BUILD_VERSION%
+  - cd clcache-%CLCACHE_VERSION%
   - clcache.exe --help
   - cd ..
   
   # Test the chocolatey package
-  - choco install -v -d clcache.%APPVEYOR_BUILD_VERSION%.nupkg
+  - choco install -v -d clcache.%CLCACHE_VERSION%.nupkg
   - clcache --help
   - where clcache
 
 on_success:
   - "echo Branch: %APPVEYOR_REPO_BRANCH%"
   - "echo Pull Request: %APPVEYOR_PULL_REQUEST_NUMBER%"
-  - cd clcache-%APPVEYOR_BUILD_VERSION%
-  - 7z a -y clcache-%APPVEYOR_BUILD_VERSION%.zip
-  - move clcache-%APPVEYOR_BUILD_VERSION%.zip ..
+  - "echo Tag: %APPVEYOR_REPO_TAG_NAME%"
+  - cd clcache-%CLCACHE_VERSION%
+  - 7z a -y clcache-%CLCACHE_VERSION%.zip
+  - move clcache-%CLCACHE_VERSION%.zip ..
   - cd ..
-  - if "%APPVEYOR_REPO_BRANCH%"=="master" if "%APPVEYOR_PULL_REQUEST_NUMBER%"=="" set PUBLISH=1
-  - sha256sum clcache.%APPVEYOR_BUILD_VERSION%.nupkg
-  - sha256sum clcache-%APPVEYOR_BUILD_VERSION%.zip
-  - if "%PUBLISH%"=="1" appveyor PushArtifact clcache.%APPVEYOR_BUILD_VERSION%.nupkg
-  - if "%PUBLISH%"=="1" appveyor PushArtifact clcache-%APPVEYOR_BUILD_VERSION%.zip
+  - if "%APPVEYOR_REPO_BRANCH%"=="master" if "%APPVEYOR_PULL_REQUEST_NUMBER%"=="" if not "%APPVEYOR_REPO_TAG_NAME%"=="" set PUBLISH=1
+  - sha256sum clcache.%CLCACHE_VERSION%.nupkg clcache-%CLCACHE_VERSION%.zip
+  - sha256sum clcache.%CLCACHE_VERSION%.nupkg clcache-%CLCACHE_VERSION%.zip > SHA256SUM
+  - if "%PUBLISH%"=="1" appveyor PushArtifact clcache.%CLCACHE_VERSION%.nupkg
+  - if "%PUBLISH%"=="1" appveyor PushArtifact clcache-%CLCACHE_VERSION%.zip
+  - if "%PUBLISH%"=="1" appveyor PushArtifact SHA256SUM

@@ -13,9 +13,11 @@ It also generates a [Chocolatey](https://chocolatey.org/) package that can be do
 
 ## How to update to a new version
 
-The version in the first line of the `appveyor.yml` file should be changed to the new version.
+In the `appveyor.yml` file, change the version in the first line and in the `CLCACHE_VERSION` environment variable to reflect the new version.
 
-Artifacts are published by AppVeyor from builds in the `master` branch. These artifacts should be uploaded to a new GitHub release, and the `.nuspec` package uploaded to Chocolatey.
+Create a new release on GitHub with a tag such as `v4.0.0` and a name such as `clcache 4.0.0`. A new build will be trigerred, and the artifacts published by AppVeyor.
+
+Artifacts are published by AppVeyor from builds in tagged commits in the `master` branch. These artifacts should be attached to the GitHub release, and the `.nuspec` package uploaded to Chocolatey.
 
 ## How it works
 
