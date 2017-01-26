@@ -11,19 +11,31 @@ It also generates a [Chocolatey](https://chocolatey.org/) package that can be do
 
 [clcache.py](https://github.com/frerich/clcache) is a little Python script which attempts to avoid unnecessary recompilation by reusing previously cached object files if possible. It is meant to be called instead of the original 'cl.exe' executable. The script analyses the command line to decide whether source code is to be compiled. If so, a cache will be queried for a previously stored object file.
 
+## How to install
+
+After the package is published on [Chocolatey](https://chocolatey.org/packages/clcache) it may be installed using:
+
+`choco install clcache`
+
+Or, for a specific version:
+
+`choco install clcache -version 4.0.0`
+
 ## How to update to a new version
 
 In the `appveyor.yml` file, change the version in the first line and in the `CLCACHE_VERSION` environment variable to reflect the new version.
 
-Create a new release on GitHub with a tag such as `v4.0.0` and a name such as `clcache 4.0.0`. A new build will be trigerred, and the artifacts published by AppVeyor.
+Create a new release on GitHub with a tag such as `v4.0.0` and a name such as `clcache 4.0.0`. A new build will be triggered, and the artifacts published by AppVeyor.
 
 Artifacts are published by AppVeyor from builds in tagged commits in the `master` branch. These artifacts should be attached to the GitHub release, and the `.nuspec` package uploaded to Chocolatey.
 
 ## How it works
 
-It uses [AppVeyor](https://www.appveyor.com/) to install `pyinstaller` into `Python 3.5` using `pip`, and then using `pyinstaller` to generate `clcache.exe` from the source package downloaded from `clcache` official releases.
+It uses [AppVeyor](https://www.appveyor.com/) to install `pyinstaller` into `Python 3.4` using `pip`, and then using `pyinstaller` to generate `clcache.exe` from the source package downloaded from `clcache` official releases.
 
 The same bundle is then also added to a Chocolatey package using `choco pack`.
+
+Note that `Python 3.4` is currently used because there is an issue when running the `Python 3.5` PyInstaller executable on older operating systems such as Windows Vista.
 
 ## License Terms
 
