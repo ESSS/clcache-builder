@@ -1,4 +1,10 @@
 # clcache-builder 
+## NOTE
+
+This project is now deprecated as it is merged in the [official `clcache` repo](https://github.com/frerich/clcache). Will be kept here for reference for a short time.
+
+See: https://github.com/frerich/clcache/pull/267
+
 ## Generates executable and Chocolatey package for clcache.py
 
 [![Latest version released](https://img.shields.io/chocolatey/v/clcache.svg)](https://chocolatey.org/packages/clcache)
